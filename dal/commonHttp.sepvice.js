@@ -229,7 +229,7 @@ export class CommonHttpService {
     }
 
     static async downloadImageAsFile() {
-        const result = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/98/Pet_dog_fetching_sticks_in_Wales-3April2010.jpg',
+        const result = await fetch('https://b1.filmpro.ru/c/141169.700xp.jpg',
         );
         const resultToBlob = await result.blob();
         const file = new File([resultToBlob], "asanaMigration");
