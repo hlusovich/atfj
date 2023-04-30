@@ -64,7 +64,7 @@ export class CommonHttpService {
         return result;
     }
 
-    static async attachImageToJetComment(issue = '4U4w4G49Ybxr', img = 'mIUhm1RZdZ1') {
+    static async attachImageToJetComment(issue = '4U4w4G49Ybxr', img = '3AxRsr3pVYNH') {
         const url = localStorage.getItem('jetBrainsUrl')  + '/api/http/chats/messages/send-message';
         console.log(url);
         const result = await window.fetch(url, {

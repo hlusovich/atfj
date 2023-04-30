@@ -4,7 +4,7 @@ import {defaultStatusName} from "../constants/statusNameConstants.js";
 
 export async function initControllers() {
     const commonService = new CommonService();
-    await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', '4Dr9bB46aA8q');
+    await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', '3AxRsr3pVYNH');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
     const fileimg = document.getElementById('file-loader-img');
@@ -64,8 +64,7 @@ export async function initControllers() {
     });
 
     fileimg.addEventListener('change', async (input) => {
-        fileLoaderText.innerText = input.target.files[0].name;
-       await CommonHttpService.uploadAttachment(input.target.files[0]);
+       console.log("upload image")
         const image = await CommonHttpService.downloadImageAsFile();
         const imageId = await CommonHttpService.uploadAttachment(image);
     });
