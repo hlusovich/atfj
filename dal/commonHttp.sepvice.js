@@ -140,17 +140,17 @@ export class CommonHttpService {
             console.log(uploadResult);
         });
 
-        // const uploadResult = await window.fetch(fullPath, {
-        //     method: 'PUT',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         "fileName": file,
-        //         "mediaType": "chat-image-attachment"
-        //     })
-        // });
+        const uploadResult2 = await window.fetch(fullPath, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "fileName": file,
+                "mediaType": "chat-image-attachment"
+            })
+        });
 
         return result;
     }

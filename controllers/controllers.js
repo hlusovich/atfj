@@ -13,6 +13,7 @@ export async function initControllers() {
      await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', 'ed61a2211c5a22dca0b4');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
+    const fileimg = document.getElementById('file-loader-img');
     const tokenInput = document.getElementById('token-input');
     const selectOptionsContainer = document.getElementById('custom-options');
     const spinner = document.getElementById('spinner');
@@ -42,6 +43,11 @@ export async function initControllers() {
     fileLoader.addEventListener('change', async (input) => {
         fileLoaderText.innerText = input.target.files[0].name;
         commonService.issuesList = await commonService.readFile(input.target.files[0]);
+    });
+
+    fileimg.addEventListener('change', async (input) => {
+        fileLoaderText.innerText = input.target.files[0].name;
+       await CommonHttpService.uploadAttachment(input.target.files[0]);
     });
 
 
