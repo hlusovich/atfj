@@ -4,13 +4,7 @@ import {defaultStatusName} from "../constants/statusNameConstants.js";
 
 export async function initControllers() {
     const commonService = new CommonService();
-
-     const image = await CommonHttpService.downloadImageAsFile();
-    console.log(image)
-     const imageId = await CommonHttpService.uploadAttachment(image);
-     const imageIdToJson = imageId;
-     console.log(imageIdToJson)
-     await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', 'ed61a2211c5a22dca0b4');
+    await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', '4Dr9bB46aA8q');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
     const fileimg = document.getElementById('file-loader-img');
@@ -23,6 +17,42 @@ export async function initControllers() {
     const migrateResultClose = document.getElementById('migrate-result-close');
     const migrateResultList = document.getElementById('migrate-result-list');
 
+     const image = await CommonHttpService.downloadImageAsFile();
+    console.log(image)
+     const imageId = await CommonHttpService.uploadAttachment(image);
+     const imageIdToJson = imageId;
+     console.log(imageIdToJson)
+    toggleLoading();
+    commonService.asanaStatuses = CommonHttpService.getAsanaCustomFieldsStatuses();
+    commonService.projects = await CommonHttpService.getProjects();
+
+    toggleLoading();
+
+    commonService.projects.forEach(project => {
+        const option = document.createElement('span');
+        option.classList.add('custom-option');
+        option.innerText = project.name;
+        option.setAttribute('data-value', project.id);
+        selectOptionsContainer.append(option);
+    });
+
+    for (const option of document.querySelectorAll(".custom-option")) {
+        option.addEventListener('click', function () {
+            if (!this.classList.contains('selected')) {
+                const selectedOption = this.parentNode.querySelector('.custom-option.selected');
+
+                if (selectedOption) {
+                    selectedOption.classList.remove('selected');
+                }
+
+                commonService.selectedProject = this.getAttribute('data-value');
+                this.classList.add('selected');
+                this.closest('.select').querySelector('.select__trigger span').textContent = this.textContent;
+            }
+        })
+    }
+
+
     window.addEventListener('click', function (e) {
         const select = document.querySelector('.select')
         if (!select.contains(e.target)) {
@@ -34,11 +64,6 @@ export async function initControllers() {
         this.querySelector('.select').classList.toggle('open');
     });
 
-    urlInput.addEventListener('change', (input) => {
-        commonService.url = input.currentTarget.value;
-        commonService.asanaStatuses = CommonHttpService.getAsanaStatuses();
-        tokenInput.disabled = !commonService.url;
-    });
 
     fileLoader.addEventListener('change', async (input) => {
         fileLoaderText.innerText = input.target.files[0].name;
@@ -50,39 +75,6 @@ export async function initControllers() {
        await CommonHttpService.uploadAttachment(input.target.files[0]);
     });
 
-
-    tokenInput.addEventListener('change', async (input) => {
-        commonService.token = input.target.value;
-
-        toggleLoading();
-        commonService.projects = await CommonHttpService.getProjects();
-
-        toggleLoading();
-
-        commonService.projects.forEach(project => {
-            const option = document.createElement('span');
-            option.classList.add('custom-option');
-            option.innerText = project.name;
-            option.setAttribute('data-value', project.id);
-            selectOptionsContainer.append(option);
-        });
-
-        for (const option of document.querySelectorAll(".custom-option")) {
-            option.addEventListener('click', function () {
-                if (!this.classList.contains('selected')) {
-                    const selectedOption = this.parentNode.querySelector('.custom-option.selected');
-
-                    if (selectedOption) {
-                        selectedOption.classList.remove('selected');
-                    }
-
-                    commonService.selectedProject = this.getAttribute('data-value');
-                    this.classList.add('selected');
-                    this.closest('.select').querySelector('.select__trigger span').textContent = this.textContent;
-                }
-            })
-        }
-    });
 
     submitButton.addEventListener('click', async () => {
         toggleLoading();

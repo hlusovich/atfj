@@ -126,7 +126,7 @@ export class CommonHttpService {
         });
         const path = await result.json();
 
-        const fullPath = localStorage.getItem('jetBrainsUrl') + path + '/' + file.name;
+        const fullPath = localStorage.getItem('jetBrainsUrl') + path + '/' + "asanaMigration";
 
         let formData = new FormData();
         formData.append("fileName", file);
@@ -138,18 +138,6 @@ export class CommonHttpService {
                 method: "PUT"
             }).then(uploadResult => {
             console.log(uploadResult);
-        });
-
-        const uploadResult2 = await window.fetch(fullPath, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "fileName": file,
-                "mediaType": "chat-image-attachment"
-            })
         });
 
         return result;
@@ -244,7 +232,6 @@ export class CommonHttpService {
         const result = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/98/Pet_dog_fetching_sticks_in_Wales-3April2010.jpg',
         );
         const resultToBlob = await result.blob();
-        console.log("BLOB")
         const file = new File([resultToBlob], "asanaMigration");
         return resultToBlob;
     }
