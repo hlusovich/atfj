@@ -132,7 +132,7 @@ export class CommonHttpService {
         formData.append("fileName", file);
         formData.append("mediaType", "chat-image-attachment");
 
-        const uploadResult =  window.fetch(fullPath,
+        const uploadResult = await window.fetch(fullPath,
             {
                 body: formData,
                 method: "PUT"
