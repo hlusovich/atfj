@@ -4,9 +4,12 @@ import {defaultStatusName} from "../constants/statusNameConstants.js";
 
 export async function initControllers() {
     const commonService = new CommonService();
-    CommonHttpService.attachImageToJetComment();
+
      const image = await CommonHttpService.downloadImageAsFile();
      const imageId = await CommonHttpService.uploadAttachment(image);
+     const imageIdToJson = imageId.json();
+     console.log(imageIdToJson)
+     await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', imageIdToJson);
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
     const tokenInput = document.getElementById('token-input');

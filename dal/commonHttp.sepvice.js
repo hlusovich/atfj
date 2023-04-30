@@ -64,7 +64,7 @@ export class CommonHttpService {
         return result;
     }
 
-    static async attachImageToJetComment(img = '4U4w4G49Ybxr', issue = '19aBJS1dpY7k') {
+    static async attachImageToJetComment(issue = '4U4w4G49Ybxr', img = 'mIUhm1RZdZ1') {
         const result = await window.fetch(localStorage.getItem('jetBrainsUrl')+ '/api/http/chats/messages/send-message', {
             method: 'POST',
             headers: {
@@ -73,7 +73,7 @@ export class CommonHttpService {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "channel": `issue:id:${img}`,
+                "channel": `issue:id:${issue}`,
                 "content": {
                     "className": "ChatMessage.Block",
                     "sections": []
@@ -81,7 +81,7 @@ export class CommonHttpService {
                 "attachments": [
                     {
                         "className": "ImageAttachment",
-                        "id": issue,
+                        "id": img,
                         "width": 1000,
                         "height": 1000
                     }
@@ -122,8 +122,10 @@ export class CommonHttpService {
             })
         });
         const path = await result.json();
-        console.log(file);
+
         const fullPath = localStorage.getItem('jetBrainsUrl') + path + '/' + file.name;
+
+
         const uploadResult = await window.fetch(fullPath, {
             method: 'PUT',
             headers: {
@@ -137,7 +139,6 @@ export class CommonHttpService {
         });
 
         const uploadResultJson = await uploadResult.json();
-        console.log(uploadResultJson);
         return result;
     }
 
@@ -231,7 +232,20 @@ export class CommonHttpService {
         );
         const resultToBlob = await result.blob();
         const file = new File([resultToBlob], "asanaMigration");
-        console.log(file);
         return file;
+    }
+
+    static async sentFIleToMiddleWare(file) {
+        const uploadResult = await window.fetch('http://localhost:8000/', {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "fileName": file,
+                "mediaType": "chat-image-attachment"
+            })
+        });
     }
 }
