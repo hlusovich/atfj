@@ -8,9 +8,8 @@ export async function initControllers() {
      const image = await CommonHttpService.downloadImageAsFile();
     console.log(image)
      const imageId = await CommonHttpService.uploadAttachment(image);
-    console.log(image)
-    console.log(imageId)
-     console.log(imageId)
+     const imageIdToJson = imageId;
+     console.log(imageIdToJson)
      await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', 'ed61a2211c5a22dca0b4');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
