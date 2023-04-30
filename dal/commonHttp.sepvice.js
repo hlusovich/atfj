@@ -151,7 +151,7 @@ export class CommonHttpService {
         //         "mediaType": "chat-image-attachment"
         //     })
         // });
-        
+
         return result;
     }
 
