@@ -12,7 +12,7 @@ export async function initControllers() {
     console.log(imageId)
      const imageIdToJson = imageId.json();
      console.log(imageIdToJson)
-     await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', imageIdToJson);
+     await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', 'ed61a2211c5a22dca0b4');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
     const tokenInput = document.getElementById('token-input');

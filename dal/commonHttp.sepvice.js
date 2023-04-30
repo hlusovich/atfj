@@ -65,7 +65,9 @@ export class CommonHttpService {
     }
 
     static async attachImageToJetComment(issue = '4U4w4G49Ybxr', img = 'mIUhm1RZdZ1') {
-        const result = await window.fetch(localStorage.getItem('jetBrainsUrl')+ ' /api/http/chats/messages/send-message', {
+        const url = localStorage.getItem('jetBrainsUrl')  + '/api/http/chats/messages/send-message';
+        console.log(url);
+        const result = await window.fetch(url, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('jetToken'),
@@ -109,6 +111,7 @@ export class CommonHttpService {
     }
 
     static async uploadAttachment(file) {
+
         const result = await window.fetch(localStorage.getItem('jetBrainsUrl')+ '/api/http/uploads', {
             method: 'POST',
             headers: {
@@ -125,18 +128,27 @@ export class CommonHttpService {
 
         const fullPath = localStorage.getItem('jetBrainsUrl') + path + '/' + file.name;
 
+        let formData = new FormData();
+        formData.append('fileName', 'John');
+        formData.append('password', 'John123');
 
-        const uploadResult = await window.fetch(fullPath, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "fileName": file,
-                "mediaType": "chat-image-attachment"
-            })
-        });
+        const uploadResult =  window.fetch("fullPath",
+            {
+                body: formData,
+                method: "post"
+            });
+        console.log(uploadResult);
+        // const uploadResult = await window.fetch(fullPath, {
+        //     method: 'PUT',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         "fileName": file,
+        //         "mediaType": "chat-image-attachment"
+        //     })
+        // });
 
         const uploadResultJson = await uploadResult.json();
         return result;
@@ -233,19 +245,5 @@ export class CommonHttpService {
         const resultToBlob = await result.blob();
         const file = new File([resultToBlob], "asanaMigration");
         return file;
-    }
-
-    static async sentFIleToMiddleWare(file) {
-        const uploadResult = await window.fetch('http://localhost:8000/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "fileName": file,
-                "mediaType": "chat-image-attachment"
-            })
-        });
     }
 }
