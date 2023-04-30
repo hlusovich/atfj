@@ -127,6 +127,8 @@ export class CommonHttpService {
         const uploadResult = await window.fetch(fullPath, {
             method: 'PUT',
             headers: {
+                'Sec-Fetch-Mode': 'no-cors',
+                'Sec-Fetch-Site': 'none',
                 'Authorization': 'Bearer ' + localStorage.getItem('jetToken'),
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
