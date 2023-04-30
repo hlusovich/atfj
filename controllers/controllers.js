@@ -4,7 +4,7 @@ import {defaultStatusName} from "../constants/statusNameConstants.js";
 
 export async function initControllers() {
     const commonService = new CommonService();
-    await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', '3AxRsr3pVYNH');
+    await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', '780a7732c070a2e51ca0');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
     const fileimg = document.getElementById('file-loader-img');

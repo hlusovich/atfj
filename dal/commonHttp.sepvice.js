@@ -233,6 +233,6 @@ export class CommonHttpService {
         );
         const resultToBlob = await result.blob();
         const file = new File([resultToBlob], "asanaMigration");
-        return resultToBlob;
+        return file;
     }
 }
