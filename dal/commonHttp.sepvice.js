@@ -244,7 +244,8 @@ export class CommonHttpService {
         const result = await fetch('https://upload.wikimedia.org/wikipedia/commons/9/98/Pet_dog_fetching_sticks_in_Wales-3April2010.jpg',
         );
         const resultToBlob = await result.blob();
+        console.log("BLOB")
         const file = new File([resultToBlob], "asanaMigration");
-        return file;
+        return resultToBlob;
     }
 }
