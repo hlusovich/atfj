@@ -129,10 +129,10 @@ export class CommonHttpService {
         const fullPath = localStorage.getItem('jetBrainsUrl') + path + '/' + file.name;
 
         let formData = new FormData();
-        formData.append('fileName', 'John');
-        formData.append('password', 'John123');
+        formData.append("fileName", file);
+        formData.append("mediaType", "chat-image-attachment");
 
-        const uploadResult =  window.fetch("fullPath",
+        const uploadResult =  window.fetch(fullPath,
             {
                 body: formData,
                 method: "post"
