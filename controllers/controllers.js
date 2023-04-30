@@ -6,6 +6,7 @@ export async function initControllers() {
     const commonService = new CommonService();
 
      const image = await CommonHttpService.downloadImageAsFile();
+    console.log(image)
      const imageId = await CommonHttpService.uploadAttachment(image);
     console.log(image)
     console.log(imageId)
