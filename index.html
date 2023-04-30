@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="module" src="script.js"></script>
+<script type="module" src="asanaGenerated.js"></script>
+
+<link rel="stylesheet" href="styles.css">
+<body>
+<div class="container">
+    <h1>FATJ</h1>
+    <label class="input-file">
+        <input id='jet-brains-url-input' class="input" type="text" placeholder="Jet Brains Url">
+    </label>
+    <label class="input-file">
+        <input id='token-input' class="input" type="text" placeholder="Token" disabled="true">
+    </label>
+    <div class="select-wrapper">
+        <div class="select">
+            <div class="select__trigger"><span>Projects</span>
+                <div class="arrow"></div>
+            </div>
+            <div id="custom-options" class="custom-options">
+            </div>
+        </div>
+    </div>
+    <label class="input-file">
+        <span id='file-loader-text' class="input" type="text"></span>
+        <input id='file-loader' type="file" name="file" placeholder="File">
+        <span class="input-file-btn">Choose file</span>
+    </label>
+
+    <button id='submit-button' class="submit-button" role="button">Migrate tasks</button>
+
+    <div id="spinner" class="modal hidden">
+        <div class="spin-wrapper">
+            <div class="spinner">
+            </div>
+        </div>
+    </div>
+    <div id="migrate-result" class="modal hidden">
+        <div class="result-title">
+            <div><span></span></div>
+            <div>Result</div>
+            <div id="migrate-result-close" class="result-title-close"><div class="result-title-close-icon">X</div></div>
+        </div>
+        <div id="migrate-result-list" class="result-list">
+        </div>
+    </div>
+</div>
+</body>
+</html>
