@@ -136,8 +136,10 @@ export class CommonHttpService {
             {
                 body: formData,
                 method: "PUT"
-            });
-        console.log(uploadResult);
+            }).then(uploadResult => {
+            console.log(uploadResult);
+        });
+
         // const uploadResult = await window.fetch(fullPath, {
         //     method: 'PUT',
         //     headers: {
