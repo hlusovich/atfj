@@ -151,8 +151,7 @@ export class CommonHttpService {
         //         "mediaType": "chat-image-attachment"
         //     })
         // });
-
-        const uploadResultJson = await uploadResult.json();
+        
         return result;
     }
 
