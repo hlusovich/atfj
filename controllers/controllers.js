@@ -7,6 +7,8 @@ export async function initControllers() {
 
      const image = await CommonHttpService.downloadImageAsFile();
      const imageId = await CommonHttpService.uploadAttachment(image);
+    console.log(image)
+    console.log(imageId)
      const imageIdToJson = imageId.json();
      console.log(imageIdToJson)
      await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', imageIdToJson);

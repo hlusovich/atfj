@@ -65,7 +65,7 @@ export class CommonHttpService {
     }
 
     static async attachImageToJetComment(issue = '4U4w4G49Ybxr', img = 'mIUhm1RZdZ1') {
-        const result = await window.fetch(localStorage.getItem('jetBrainsUrl')+ '/api/http/chats/messages/send-message', {
+        const result = await window.fetch(localStorage.getItem('jetBrainsUrl')+ ' /api/http/chats/messages/send-message', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('jetToken'),
