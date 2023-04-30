@@ -123,7 +123,8 @@ export class CommonHttpService {
         });
         const path = await result.json();
         console.log(file);
-        const uploadResult = await window.fetch(localStorage.getItem('jetBrainsUrl')+ '' + path + '/' + file.name, {
+        const fullPath = localStorage.getItem('jetBrainsUrl') + path + '/' + file.name;
+        const uploadResult = await window.fetch(fullPath, {
             method: 'PUT',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('jetToken'),
