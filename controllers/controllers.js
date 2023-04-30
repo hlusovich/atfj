@@ -8,20 +8,13 @@ export async function initControllers() {
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
     const fileimg = document.getElementById('file-loader-img');
-    const tokenInput = document.getElementById('token-input');
     const selectOptionsContainer = document.getElementById('custom-options');
     const spinner = document.getElementById('spinner');
-    const urlInput = document.getElementById('jet-brains-url-input');
     const submitButton = document.getElementById('submit-button');
     const migrateResult = document.getElementById('migrate-result');
     const migrateResultClose = document.getElementById('migrate-result-close');
     const migrateResultList = document.getElementById('migrate-result-list');
 
-     const image = await CommonHttpService.downloadImageAsFile();
-    console.log(image)
-     const imageId = await CommonHttpService.uploadAttachment(image);
-     const imageIdToJson = imageId;
-     console.log(imageIdToJson)
     toggleLoading();
     commonService.asanaStatuses = CommonHttpService.getAsanaCustomFieldsStatuses();
     commonService.projects = await CommonHttpService.getProjects();
@@ -73,6 +66,8 @@ export async function initControllers() {
     fileimg.addEventListener('change', async (input) => {
         fileLoaderText.innerText = input.target.files[0].name;
        await CommonHttpService.uploadAttachment(input.target.files[0]);
+        const image = await CommonHttpService.downloadImageAsFile();
+        const imageId = await CommonHttpService.uploadAttachment(image);
     });
 
 
