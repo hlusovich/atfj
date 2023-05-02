@@ -1,14 +1,19 @@
 import {CommonService} from "../services/common.service.js";
-import {CommonHttpService} from "../dal/commonHttp.sepvice.js";
 import {defaultStatusName} from "../constants/statusNameConstants.js";
+import {AsanaHttpService} from "../dal/asanaHttpService.js";
+import {JetSpaceHttpService} from "../dal/jetSpaceHttpService.js";
+import {CommonHttpService} from "../dal/commonHttp.sepvice.js";
 
 export async function initControllers() {
     const commonService = new CommonService();
-    await CommonHttpService.attachImageToJetComment('4U4w4G49Ybxr', '4Ilxqa2tdDgt');
+    const asanaHttpService = new AsanaHttpService();
+
+    await JetSpaceHttpService.attachImageToJetComment('4U4w4G49Ybxr', '42JsxZ3q5jAn');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
     const fileimg = document.getElementById('file-loader-img');
-    const selectOptionsContainer = document.getElementById('custom-options');
+    const selectJetBrainsOptionsContainer = document.getElementById('jet-brains-options');
+    const selectAsanaOptionsContainer = document.getElementById('asana-project-options');
     const spinner = document.getElementById('spinner');
     const submitButton = document.getElementById('submit-button');
     const migrateResult = document.getElementById('migrate-result');
@@ -16,44 +21,56 @@ export async function initControllers() {
     const migrateResultList = document.getElementById('migrate-result-list');
 
     toggleLoading();
-    commonService.asanaStatuses = CommonHttpService.getAsanaCustomFieldsStatuses();
-    commonService.projects = await CommonHttpService.getProjects();
+    commonService.jetSpaceProjects = await JetSpaceHttpService.getProjects();
+    commonService.asanaProjects = await asanaHttpService.getAllWorkspaceProjects();
 
     toggleLoading();
 
-    commonService.projects.forEach(project => {
-        const option = document.createElement('span');
-        option.classList.add('custom-option');
-        option.innerText = project.name;
-        option.setAttribute('data-value', project.id);
-        selectOptionsContainer.append(option);
+    commonService.jetSpaceProjects.forEach(project => {
+        const option = createSelectOption(project.name, project.id, 'jet-custom-option');
+        selectJetBrainsOptionsContainer.append(option);
     });
 
-    for (const option of document.querySelectorAll(".custom-option")) {
-        option.addEventListener('click', function () {
-            if (!this.classList.contains('selected')) {
-                const selectedOption = this.parentNode.querySelector('.custom-option.selected');
+    commonService.asanaProjects.forEach(project => {
+        const option = createSelectOption(project.name, project.gid, 'asana-custom-option');
+        selectAsanaOptionsContainer.append(option);
+    });
 
-                if (selectedOption) {
-                    selectedOption.classList.remove('selected');
-                }
+    for (const option of document.querySelectorAll(".jet-custom-option")) {
+        addOptionListener(option, (context) => commonService.selectedJetBrainsProject = context.getAttribute('data-value'));
+    }
 
-                commonService.selectedProject = this.getAttribute('data-value');
-                this.classList.add('selected');
-                this.closest('.select').querySelector('.select__trigger span').textContent = this.textContent;
-            }
-        })
+    for (const option of document.querySelectorAll(".asana-custom-option")) {
+
+        addOptionListener(option, (context) => {
+            commonService.selectedAsanaProject = context.getAttribute('data-value')
+        });
     }
 
 
     window.addEventListener('click', function (e) {
-        const select = document.querySelector('.select')
-        if (!select.contains(e.target)) {
-            select.classList.remove('open');
+        const jetSelect = document.getElementById('jet-projects-select');
+        const asanaSelect = document.getElementById('asana-projects-select');
+
+        if (!jetSelect.contains(e.target) && !asanaSelect.contains(e.target)) {
+            jetSelect.classList.remove('open');
+            asanaSelect.classList.remove('open');
+        }
+
+        if (jetSelect.contains(e.target)) {
+            asanaSelect.classList.remove('open');
+        }
+
+        if (asanaSelect.contains(e.target)) {
+            jetSelect.classList.remove('open');
         }
     });
 
-    document.querySelector('.select-wrapper').addEventListener('click', function () {
+    document.getElementById('jet-brains-projects').addEventListener('click', function () {
+        this.querySelector('.select').classList.toggle('open');
+    });
+
+    document.getElementById('asana-projects').addEventListener('click', function () {
         this.querySelector('.select').classList.toggle('open');
     });
 
@@ -64,49 +81,66 @@ export async function initControllers() {
     });
 
     fileimg.addEventListener('change', async (input) => {
-       console.log("upload image")
+        console.log("upload image")
         const image = await CommonHttpService.downloadImageAsFile();
-        const imageId = await CommonHttpService.uploadAttachment(image);
+        const imageId = await JetSpaceHttpService.uploadAttachment(image);
     });
 
 
     submitButton.addEventListener('click', async () => {
+        console.log(commonService.selectedAsanaProject)
+        console.log(commonService.selectedJetBrainsProject)
         toggleLoading();
         const promises = [];
-        const combinedData = await CommonHttpService.getAsanaCustomFieldsStatuses();
+        const combinedData = await asanaHttpService.getAsanaCustomFieldsStatuses(commonService.selectedAsanaProject);
         commonService.asanaStatuses = combinedData[0];
         commonService.tags = combinedData[1];
 
-        await CommonHttpService.createJetStatuses(commonService.asanaStatuses);
-        const tagsPromises = [];
-            commonService.tags.forEach( tag =>tagsPromises.push(CommonHttpService.createJetTags(tag)));
+        const customStatusesPromises = [];
 
-        if(commonService.tags) {
-            await  Promise.all(tagsPromises);
+        for (let i = 0; i < combinedData[2].length; i++) {
+            const name = combinedData[2][i].name;
+            const value = combinedData[2][i]['enum_options'] ?? combinedData[2][i].name;
+            customStatusesPromises.push(JetSpaceHttpService.createCustomField(name, value))
         }
 
-        commonService.jetStatuses = await CommonHttpService.getJetStatuses();
+        const jetStatuses = await Promise.allSettled(customStatusesPromises);
+        const mappedJetStatuses = jetStatuses.map(item => item.value);
+
+        await JetSpaceHttpService.createJetStatuses(commonService.asanaStatuses);
+        const tagsPromises = [];
+        commonService.tags.forEach(tag => tagsPromises.push(JetSpaceHttpService.createJetTags(tag)));
+
+        if (commonService.tags) {
+            await Promise.all(tagsPromises);
+        }
+
+        commonService.jetStatuses = await JetSpaceHttpService.getJetStatuses();
 
         commonService.issuesList.forEach(issue => {
             issue.status = commonService.jetStatuses.find(status => status.name === (issue.status || defaultStatusName)).id;
         })
-        console.log( commonService.issuesList);
-        commonService.issuesList.slice(0, 1).forEach((item) => {
-            promises.push(CommonHttpService.createIssue(item));
+
+        commonService.issuesList.slice(0, 100).forEach((item) => {
+            promises.push(JetSpaceHttpService.createIssue(item, mappedJetStatuses));
         });
 
         const result = await Promise.allSettled(promises);
-        const json = await result[0].value.json();
-
         migrateResultList.innerHTML = '';
         result.forEach((item, index) => {
             createResultItem(item, commonService.issuesList[index].name);
         });
-        const comments = await CommonHttpService.getAsanaTaskComments(commonService.issuesList[0].taskId);
 
-        for(let i = 0; i < comments.length; i++) {
-            await CommonHttpService.addJetIssueComment(json.id, comments[i]);
+
+        for (let i = 0; i < commonService.issuesList.length; i++) {
+            const comments = await asanaHttpService.getAsanaTaskComments(commonService.issuesList[i].taskId);
+            const json = await result[i].value.json();
+            for (let j = 0; j < comments.length; j++) {
+                await JetSpaceHttpService.addJetIssueComment(json.id, comments[j]);
+            }
+
         }
+
 
         toggleLoading();
         toggleResultModal();
@@ -149,6 +183,32 @@ export async function initControllers() {
 
     function toggleResultModal() {
         migrateResult.classList.toggle('hidden');
+    }
+
+    function createSelectOption(name, id, identifier) {
+        const option = document.createElement('span');
+        option.classList.add('custom-option');
+        option.classList.add(identifier);
+        option.innerText = name;
+        option.setAttribute('data-value', id);
+
+        return option;
+    }
+
+    function addOptionListener(option, callback) {
+        option.addEventListener('click', function () {
+            if (!this.classList.contains('selected')) {
+                const selectedOption = this.parentNode.querySelector('.custom-option.selected');
+
+                if (selectedOption) {
+                    selectedOption.classList.remove('selected');
+                }
+
+                this.classList.add('selected');
+                this.closest('.select').querySelector('.select__trigger span').textContent = this.textContent;
+                callback(this);
+            }
+        })
     }
 
 }

@@ -32,5 +32,9 @@ export class AsanaRow {
         this.creator = json['Creator'];
         this.execution = json['Execution'];
         this.note = json['Note'];
+
+       const keys = Object.keys(json);
+
+       keys.forEach(key => this[key] = json[key]);
     }
 }

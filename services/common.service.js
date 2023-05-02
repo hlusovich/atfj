@@ -6,8 +6,10 @@ export class CommonService {
         this.baseUrl = baseUrl;
         this.fullToken = null;
         this.issuesList = null;
-        this.projectsList = null;
-        this.project = null;
+        this.jetSpaceProjects = null;
+        this.asanaProjects = null;
+        this.selectedJetBrainsProject = null;
+        this.selectedAsanaProject = null;
         this.jetBrainsUrl = null;
         this.jetStatuses = null;
         this.asanaStatuses = null;
@@ -16,22 +18,6 @@ export class CommonService {
 
     set token(tokenString) {
         this.fullToken = this.tokenBase + tokenString;
-    }
-
-    set selectedProject(project) {
-        this.project = project;
-    }
-
-    get selectedProject() {
-        return this.project;
-    }
-
-    set projects(projects) {
-        this.projectsList = projects;
-    }
-
-    get projects() {
-        return this.projectsList;
     }
 
     get url() {

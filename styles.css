@@ -202,7 +202,7 @@ input[type=text]:focus {
     border-color: #ddd;
     border-radius: 6px;
 }
-.custom-options {
+.custom-options,.asana-project-options {
     position: absolute;
     display: block;
     top: 100%;
@@ -244,12 +244,12 @@ input[type=text]:focus {
     background-color: #419152;
 }
 
-.arrow {
+.jet-arrow {
     position: relative;
     height: 15px;
     width: 15px;
 }
-.arrow::before, .arrow::after {
+.jet-arrow::before, .jet-arrow::after {
     content: "";
     position: absolute;
     bottom: 0px;
@@ -257,24 +257,58 @@ input[type=text]:focus {
     height: 100%;
     transition: all 0.5s;
 }
-.arrow::before {
+.jet-arrow::before {
     left: -5px;
     transform: rotate(45deg);
     background-color: #394a6d;
 }
-.arrow::after {
+.jet-arrow::after {
     left: 5px;
     transform: rotate(-45deg);
     background-color: #394a6d;
 }
-.open .arrow::before {
+.open .jet-arrow::before {
     left: -5px;
     transform: rotate(-45deg);
 }
-.open .arrow::after {
+.open .jet-arrow::after {
     left: 5px;
     transform: rotate(45deg);
 }
+
+.asana-arrow {
+    position: relative;
+    height: 15px;
+    width: 15px;
+}
+.asana-arrow::before, .asana-arrow::after {
+    content: "";
+    position: absolute;
+    bottom: 0px;
+    width: 0.15rem;
+    height: 100%;
+    transition: all 0.5s;
+}
+.asana-arrow::before {
+    left: -5px;
+    transform: rotate(45deg);
+    background-color: #394a6d;
+}
+.asana-arrow::after {
+    left: 5px;
+    transform: rotate(-45deg);
+    background-color: #394a6d;
+}
+.open .asana-arrow::before {
+    left: -5px;
+    transform: rotate(-45deg);
+}
+.open .asana-arrow::after {
+    left: 5px;
+    transform: rotate(45deg);
+}
+
+
 
 .modal {
     position: absolute;
