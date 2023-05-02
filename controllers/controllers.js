@@ -134,7 +134,7 @@ export async function initControllers() {
             const json = await result[i].value.json();
             for (let j = 0; j < comments.length; j++) {
                 if(comments[j].text.startsWith('asset_id=')) {
-                    const image = await CommonHttpService.downloadImageAsFile();
+                    const image = await CommonHttpService.downloadImageAsFile(comments[j].text);
                     const imageId = await JetSpaceHttpService.uploadAttachment(image);
                     await JetSpaceHttpService.attachImageToJetComment(json.id, imageId);
                 }
