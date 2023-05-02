@@ -8,10 +8,8 @@ export async function initControllers() {
     const commonService = new CommonService();
     const asanaHttpService = new AsanaHttpService();
 
-    await JetSpaceHttpService.attachImageToJetComment('4U4w4G49Ybxr', '42JsxZ3q5jAn');
     const fileLoader = document.getElementById('file-loader');
     const fileLoaderText = document.getElementById('file-loader-text');
-    const fileimg = document.getElementById('file-loader-img');
     const selectJetBrainsOptionsContainer = document.getElementById('jet-brains-options');
     const selectAsanaOptionsContainer = document.getElementById('asana-project-options');
     const spinner = document.getElementById('spinner');
@@ -80,16 +78,13 @@ export async function initControllers() {
         commonService.issuesList = await commonService.readFile(input.target.files[0]);
     });
 
-    fileimg.addEventListener('change', async (input) => {
-        console.log("upload image")
-        const image = await CommonHttpService.downloadImageAsFile();
-        const imageId = await JetSpaceHttpService.uploadAttachment(image);
-    });
-
-
     submitButton.addEventListener('click', async () => {
-        console.log(commonService.selectedAsanaProject)
-        console.log(commonService.selectedJetBrainsProject)
+        commonService.issuesList = commonService.issuesList.filter(issue => issue.name === 'Test task for jet transfer');
+
+        // const projectMembers = await JetSpaceHttpService.getProjectMembers(commonService.selectedJetBrainsProject);
+
+        const projectMembers = [];
+
         toggleLoading();
         const promises = [];
         const combinedData = await asanaHttpService.getAsanaCustomFieldsStatuses(commonService.selectedAsanaProject);
@@ -116,31 +111,38 @@ export async function initControllers() {
         }
 
         commonService.jetStatuses = await JetSpaceHttpService.getJetStatuses();
-
         commonService.issuesList.forEach(issue => {
             issue.status = commonService.jetStatuses.find(status => status.name === (issue.status || defaultStatusName)).id;
-        })
-
-        commonService.issuesList.slice(0, 100).forEach((item) => {
-            promises.push(JetSpaceHttpService.createIssue(item, mappedJetStatuses));
         });
 
+        const jetTags = await JetSpaceHttpService.getAllHierarchicalTags(commonService.selectedJetBrainsProject);
+
+        commonService.issuesList.forEach((item) => {
+            promises.push(JetSpaceHttpService.createIssue(item, mappedJetStatuses, jetTags.data, projectMembers));
+        });
         const result = await Promise.allSettled(promises);
+
         migrateResultList.innerHTML = '';
+
         result.forEach((item, index) => {
             createResultItem(item, commonService.issuesList[index].name);
         });
 
 
-        for (let i = 0; i < commonService.issuesList.length; i++) {
+        for (let i = 0; i < result.length; i++) {
             const comments = await asanaHttpService.getAsanaTaskComments(commonService.issuesList[i].taskId);
             const json = await result[i].value.json();
             for (let j = 0; j < comments.length; j++) {
-                await JetSpaceHttpService.addJetIssueComment(json.id, comments[j]);
+                if(comments[j].text.startsWith('asset_id=')) {
+                    const image = await CommonHttpService.downloadImageAsFile();
+                    const imageId = await JetSpaceHttpService.uploadAttachment(image);
+                    await JetSpaceHttpService.attachImageToJetComment(json.id, imageId);
+                }
+                else {
+                    await JetSpaceHttpService.addJetIssueComment(json.id, comments[j]);
+                }
             }
-
         }
-
 
         toggleLoading();
         toggleResultModal();
@@ -174,7 +176,7 @@ export async function initControllers() {
 
         const itemText = document.createElement('div');
         itemText.className = 'result-list-item-text';
-        itemText.innerText = itemData.value.statusText;
+        itemText.innerText = itemData.value?.statusText || itemData.value?.statusText;
 
         item.append(itemText);
 

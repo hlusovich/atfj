@@ -33,8 +33,14 @@ export class AsanaHttpService {
         return projects.data;
     }
 
+    async getAllWorkspaceUsers() {
+        const projects = await this.client.users.getUsersForWorkspace(localStorage.getItem('asanaWorkSpace'), {opt_pretty: true});
+        return projects.data;
+    }
+
      async getAsanaTaskComments(taskId) {
-        const taskStories = await this.client.stories.getStoriesForTask(taskId, {opt_pretty: true, "type": "comment",});
+        const taskStories = await this.client.stories.getStoriesForTask(taskId, { opt_fields : 'html_text,type,text,created_at,created_by', opt_pretty: true, "type": "comment",});
+
         const comments = taskStories.data.filter(story => story.type === commentIdentifier).map(comment => new CommentDto(comment));
 
         const attachmentsObjsIds = await this.getAsanaAttachmentsForObject(taskId);
@@ -44,20 +50,17 @@ export class AsanaHttpService {
         const attachements = await Promise.all(attachmentsPromises);
 
         comments.forEach(comment => {
-            if (!comment.text) {
                 AsanaCommentsHelper.getImageInDefaultAttachmentDuration(comment, attachements);
-            }
         });
-        return comments;
+        const preparedComments = [];
+
+        comments.forEach(item => preparedComments.push(AsanaCommentsHelper.splitCommentByImgUrls(item)));
+
+        return preparedComments.flat();
     }
 
      async getAsanaAttachmentsForObject(taskId) {
-        const attachmentsObjs = await this.client.attachments.getAttachmentsForObject({parent: taskId, opt_pretty: true});
+        const attachmentsObjs = await this.client.attachments.getAttachmentsForObject({parent: taskId, opt_fields : 'html_text',});
         return attachmentsObjs.data.map(attachmentsObj => attachmentsObj.gid);
-    }
-
-     async getAsanaAttachments(attachmentId, taskId) {
-        const attachments = await this.client.attachments.getAttachment(attachmentId, {parent: taskId, opt_pretty: true});
-        return attachments;
     }
 }
